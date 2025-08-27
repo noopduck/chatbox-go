@@ -8,21 +8,32 @@ import (
 	"net/http"
 )
 
+type Message struct {
+	Role    string `json:"role"`
+	Content string `json:"content"`
+}
+
+type Request struct {
+	Model    string    `json:"model"`
+	Messages []Message `json:"messages"`
+	Stream   bool      `json:"stream"`
+}
+
 type Context struct {
 	previousMessages string
 }
 
 func (c *Context) Client(text string) {
 	// create the payload
-	req := map[string]any{
-		"model": "llama3.1:8b",
-		"messages": []map[string]string{
+	req := Request{
+		Model: "llama3.1:8b",
+		Messages: []Message{
 			{
-				"role":    "user",
-				"content": c.previousMessages + " " + text,
+				Role:    "user",
+				Content: c.previousMessages + " " + text,
 			},
 		},
-		"stream": true,
+		Stream: true,
 	}
 
 	fmt.Println(c.previousMessages)
