@@ -19,14 +19,22 @@ type Request struct {
 	Stream   bool      `json:"stream"`
 }
 
+type Config struct {
+	APIBaseURL string
+	APIToken   string
+	Port       int
+	Model      string
+}
+
 type Context struct {
 	previousMessages string
+	Config           Config
 }
 
 func (c *Context) Client(text string) {
 	// create the payload
 	req := Request{
-		Model: "llama3.1:8b",
+		Model: c.Config.Model,
 		Messages: []Message{
 			{
 				Role:    "user",
@@ -44,7 +52,9 @@ func (c *Context) Client(text string) {
 		return
 	}
 
-	resp, err := http.Post("http://192.168.10.19:11434/api/chat", "application/json", bytes.NewReader(jsonData))
+	var connection = c.Config.APIBaseURL + ":" + fmt.Sprint(c.Config.Port) + "/api/chat"
+
+	resp, err := http.Post(connection, "application/json", bytes.NewReader(jsonData))
 	if err != nil {
 		fmt.Println("Error:", err)
 		return
