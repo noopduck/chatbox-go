@@ -9,15 +9,19 @@ import (
 	"github.com/noopduck/chatbox/internal/client"
 )
 
-// Input prompt, read standard input
+// Prompt read standard input
 // Exit program if Prompt receives "/bye"
 func Prompt() string {
 	reader := bufio.NewReader(os.Stdin)
 	fmt.Print("Comment > ")
-	text, _ := reader.ReadString('\n')
-	text = strings.Trim(text, "\n")
+	text, err := reader.ReadString('\n')
+	if err != nil {
+		fmt.Println("Error reading input:", err)
+	}
 
-	if strings.Compare(text, "/bye") == 0 {
+	text = strings.TrimSuffix(text, "\n")
+
+	if text == "/bye" {
 		os.Exit(0)
 	}
 
@@ -26,7 +30,6 @@ func Prompt() string {
 
 func main() {
 	// Call the llm-client
-	fmt.Println("OOOKEY")
 
 	config := client.Config{
 		APIBaseURL: "http://192.168.10.19",
